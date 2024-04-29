@@ -494,7 +494,7 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
       on.exit(unlink(tmp))
 
       for (i in 1:5) {
-        h <- curl::new_handle()
+        # h <- curl::new_handle()
         # random query to avoid cache
         ru <- paste(sample(c(letters, 0:9), 4), collapse = "")
         cu <- paste0("https://finance.yahoo.com?", ru)
@@ -503,13 +503,13 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
         #curl::curl_download(cu, tmp, handle = h)
         utils::download.file(cu, destfile=tmp)
 
-        if (NROW(curl::handle_cookies(h)) > 0)
-          break;
+        # if (NROW(curl::handle_cookies(h)) > 0)
+        #   break;
         Sys.sleep(0.1)
       }
 
-      if (NROW(curl::handle_cookies(h)) == 0)
-        stop("Could not establish session after 5 attempts.")
+      # if (NROW(curl::handle_cookies(h)) == 0)
+      #   stop("Could not establish session after 5 attempts.")
 
       return(h)
     }
@@ -519,9 +519,9 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
     n <- if (unclass(Sys.time()) %% 1L >= 0.5) 1L else 2L
     query.srv <- paste0("https://query", n, ".finance.yahoo.com/",
                         "v1/test/getcrumb")
-    cres <- curl::curl_fetch_memory(query.srv, handle = h$ch)
+    # cres <- curl::curl_fetch_memory(query.srv, handle = h$ch)
 
-    h$cb <- rawToChar(cres$content)
+    # h$cb <- rawToChar(cres$content)
     assign("_handle_", h, .env)
   }
   return(h)
