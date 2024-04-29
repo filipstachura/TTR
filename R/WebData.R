@@ -191,7 +191,7 @@ function(exchange = c("AMEX", "NASDAQ", "NYSE", "ARCA", "BATS", "IEX"),
       message("Fetching NASDAQ symbols...")
       flush.console()
     }
-    curl::curl_download(nasdaq.url, destfile = tmp)
+    utils::download.file(nasdaq.url, destfile = tmp)
     nasdaq <- read.table(tmp, header = TRUE, sep = "|", quote = "",
                          fill = TRUE, na.strings = NULL)
 
@@ -217,7 +217,7 @@ function(exchange = c("AMEX", "NASDAQ", "NYSE", "ARCA", "BATS", "IEX"),
       flush.console()
     }
 
-    curl::curl_download(other.url, destfile = tmp)
+    utils::download.file(other.url, destfile = tmp)
     other <- read.table(tmp, header = TRUE, sep = "|", quote = "",
                         fill = TRUE, na.strings = NULL)
 
@@ -391,7 +391,8 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
       url <- .yahooURL(symbol, beg, end, interval, "history", handle)
 
       # Fetch data
-      curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      # curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      utils::download.file(url, destfile=tmp)
 
       # Read data
       ohlc <- read.csv(tmp, na.strings="null")
@@ -416,7 +417,11 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
 
       # Split data
       url <- .yahooURL(symbol, beg, end, "1d", "split", handle)
-      curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      
+      # Trying without curl
+      #curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      utils::download.file(url, destfile=tmp)
+
       spl <- read.csv(tmp, as.is=TRUE)
       if(NROW(spl)==0) {
         spl <- NA
@@ -428,7 +433,11 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
 
       # Dividend data
       url <- .yahooURL(symbol, beg, end, "1d", "div", handle)
-      curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      
+      # Trying without curl
+      # curl::curl_download(url, destfile=tmp, quiet=quiet, handle=handle$ch)
+      utils::download.file(url, destfile=tmp)
+
       div <- read.csv(tmp, as.is=TRUE)
       div <- xts(div[,2],as.Date(div[,1]))
       colnames(div) <- NULL
@@ -489,7 +498,11 @@ function(symbol, start, end, freq="daily", type="price", adjust=TRUE, quiet=FALS
         # random query to avoid cache
         ru <- paste(sample(c(letters, 0:9), 4), collapse = "")
         cu <- paste0("https://finance.yahoo.com?", ru)
-        curl::curl_download(cu, tmp, handle = h)
+
+        # Trying without curl:
+        #curl::curl_download(cu, tmp, handle = h)
+        utils::download.file(cu, destfile=tmp)
+
         if (NROW(curl::handle_cookies(h)) > 0)
           break;
         Sys.sleep(0.1)
